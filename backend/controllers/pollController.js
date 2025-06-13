@@ -43,6 +43,7 @@ exports.createPoll = async (req, res) => {
         res.status(201).json({ poll: newPoll });
     } catch (error) {
         res.status(500).json({ message: "Error creating poll", error: error.message });
+    
     }
 }
 
@@ -104,7 +105,7 @@ exports.getAllPolls = async (req, res) => {
             }
         }).sort((a, b) => b.count - a.count);
         res.status(200).json({
-            polls: updatedPolls, 
+            polls: updatedPolls,
             currentPage: pageNumber,
             totalPages: Math.ceil(totalPolls / pageSize),
             totalPolls,
@@ -120,23 +121,49 @@ exports.getVotedPoll = async (req, res) => {
     try {
 
     } catch (error) {
-
+        res.status(500).json({ message: "Error getting polls", error: error.message });
     }
 }
 
 exports.getPollById = async (req, res) => {
+
     try {
 
     } catch (error) {
-
+        res.status(500).json({ message: "Error getting polls", error: error.message });
     }
 }
 
 exports.voteOnPoll = async (req, res) => {
+    const { id } = req.params
+    const { optionIndex, voterId, responseText } = req.body
     try {
-
+        const poll = await Poll.findById(id)
+        if (!poll) {
+            return res.status(404).json({ message: "Poll not found" });
+        }
+        if (poll.closed) {
+            return res.status(400).json({ message: "Poll is closed" });
+        }
+        if (poll.voters.includes(voterId)) {
+            return res.status(400).json({ message: "User has already voted" });
+        }
+        if (poll.type === "open-ended") {
+            if (!responseText) {
+                return res.status(400).json({ message: "Response text is required for open-ended poll" });
+            }
+            poll.responses.push({ voterId, responseText });
+        } else {
+            if (optionIndex === undefined || optionIndex < 0 || optionIndex >= poll.options.length) {
+                return res.status(400).json({ message: "Invalid option index" });
+            }
+            poll.options[optionIndex].votes += 1;
+        }
+        poll.voters.push(voterId);
+        await poll.save();
+        res.status(200).json(poll);
     } catch (error) {
-
+        res.status(500).json({ message: "Error getting polls", error: error.message });
     }
 }
 
@@ -146,7 +173,7 @@ exports.closePoll = async (req, res) => {
     try {
 
     } catch (error) {
-
+        res.status(500).json({ message: "Error getting polls", error: error.message });
     }
 }
 
@@ -155,7 +182,7 @@ exports.bookmarkPoll = async (req, res) => {
     try {
 
     } catch (error) {
-
+        res.status(500).json({ message: "Error getting polls", error: error.message });
     }
 }
 
@@ -163,7 +190,7 @@ exports.getBookmarkedPolls = async (req, res) => {
     try {
 
     } catch (error) {
-
+        res.status(500).json({ message: "Error getting polls", error: error.message });
     }
 }
 
@@ -171,6 +198,6 @@ exports.deletePoll = async (req, res) => {
     try {
 
     } catch (error) {
-
+        res.status(500).json({ message: "Error getting polls", error: error.message });
     }
 }
