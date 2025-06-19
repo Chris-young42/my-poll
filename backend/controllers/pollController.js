@@ -43,7 +43,7 @@ exports.createPoll = async (req, res) => {
         res.status(201).json({ poll: newPoll });
     } catch (error) {
         res.status(500).json({ message: "Error creating poll", error: error.message });
-    
+
     }
 }
 
@@ -117,17 +117,50 @@ exports.getAllPolls = async (req, res) => {
 }
 
 exports.getVotedPoll = async (req, res) => {
+    const { page = 1, limit = 10 } = req.query
+    const userId = req.user._id
+    console.log(userId);
+
+    
 
     try {
+        const pageNumber = parseInt(page, 10)
+        const pageSize = parseInt(limit, 10)
+        const skip = (pageNumber - 1) * pageSize
+        const polls = await Poll.find({ voters: userId })
+            .populate('creator', 'fullName profileImageUrl username email')
+            .populate({
+                path: "responses.voterId",
+                select: "username profileImageUrl fullName"
+            }).skip(skip).limit(pageSize)
+        const updatedPolls = polls.map((poll) => {
+            const userHasVoted = poll.voters.some((voterId) => voterId.equals(userId))
+            return {
+                ...poll.toObject(),
+                userHasVoted
+            }
+        })
 
+        const totalVotedPolls = await Poll.countDocuments({ voters: userId })
+        res.status(200).json({
+            polls: updatedPolls,
+            currentPage: pageNumber,
+            totalPages: Math.ceil(totalVotedPolls / pageSize),
+            totalVotedPolls
+        })
     } catch (error) {
         res.status(500).json({ message: "Error getting polls", error: error.message });
     }
 }
 
 exports.getPollById = async (req, res) => {
-
+    const { id } = req.params
     try {
+        const poll = await Poll.findById(id).populate("creator", "username email")
+        if (!poll) {
+            return res.status(404).json({ message: "Poll not found" })
+        }
+        res.status(200).json({ poll })
 
     } catch (error) {
         res.status(500).json({ message: "Error getting polls", error: error.message });
