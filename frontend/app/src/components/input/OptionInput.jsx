@@ -5,7 +5,7 @@ const OptionInput = ({ optionList, setOptionList }) => {
     const [option, setOption] = useState('')
     const handleAddOption = () => {
         if (option.trim() && optionList.length < 4) {
-            setOptionList([...optionList, option.trim()])
+            setOptionList([...optionList, option.trim()]
             setOption('')
         }
     }
