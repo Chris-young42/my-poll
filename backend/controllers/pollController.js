@@ -121,7 +121,7 @@ exports.getVotedPoll = async (req, res) => {
     const userId = req.user._id
     console.log(userId);
 
-    
+
 
     try {
         const pageNumber = parseInt(page, 10)
@@ -201,10 +201,19 @@ exports.voteOnPoll = async (req, res) => {
 }
 
 exports.closePoll = async (req, res) => {
-
-
+    const { id } = req.params
+    const userId = req.user.id
     try {
-
+        const poll = await Poll.findById(id)
+        if (!poll) {
+            return res.status(404).json({ message: "Poll not found" });
+        }
+        if (!poll.creator.toString() !== userId) {
+            return res.status(403).json({ message: "Forbidden: Only the poll creator can close the poll" });
+        }
+        poll.closed = true
+        await poll.save()
+        res.status(200).json({ message: "Poll closed successfully" })
     } catch (error) {
         res.status(500).json({ message: "Error getting polls", error: error.message });
     }
@@ -212,24 +221,84 @@ exports.closePoll = async (req, res) => {
 
 
 exports.bookmarkPoll = async (req, res) => {
+    const { id } = req.params
+    const userId = req.user.id
     try {
+        const user = await User.findById(userId)
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        const isBookmarked = user.bookmarkedPolls.includes(id)
+        if (isBookmarked) {
+            user.bookmarkedPolls = user.bookmarkedPolls.filter((pollId) => pollId.toString() !== id)
 
+            await user.save()
+            return res.status(200).json({
+                message: "Poll bookmarked successfully",
+                bookmarkPoll: user.bookmarkedPolls
+            })
+        }
+
+        user.bookmarkedPolls.push(id)
+        await user.save()
+        res.status(200).json({
+            message: "Poll bookmarked successfully",
+            bookmarkPoll: user.bookmarkedPolls
+        })
     } catch (error) {
         res.status(500).json({ message: "Error getting polls", error: error.message });
     }
 }
 
 exports.getBookmarkedPolls = async (req, res) => {
+    const userId = req.user.id
     try {
+        const user = await User.findById(userId).populate({
+            path: "bookmarkedPolls",
+            populate: {
+                path: "creator",
+                select: "username username profileImageUrl"
+            }
+        })
 
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const bookmarkedPolls = user.bookmarkedPolls
+
+        const updatedPolls = bookmarkedPolls.map((poll) => {
+            const userHasVoted = poll.voters.some((voterId) =>
+                voterId.equals(userId)
+            )
+            return {
+                ...poll.toObject(),
+                userHasVoted
+            }
+
+        })
+        res.status(200).json({
+            bookmarkedPolls: updatedPolls
+        })
     } catch (error) {
         res.status(500).json({ message: "Error getting polls", error: error.message });
     }
 }
 
 exports.deletePoll = async (req, res) => {
+    const { id } = req.params
+    const userId = req.user.id
     try {
+        const poll = await Poll.findById(id)
+        if (!poll) {
+            return res.status(404).json({ message: "Poll not found" });
+        }
+        if (poll.creator.toString() !== userId) {
+            return res.status(403).json({ message: "Forbidden: Only the poll creator can delete the poll" });
+        }
+        await poll.findByIdAndDelete(id)
 
+        res.status(200).json({ message: "Poll deleted successfully" })
     } catch (error) {
         res.status(500).json({ message: "Error getting polls", error: error.message });
     }
