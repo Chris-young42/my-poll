@@ -24,5 +24,8 @@ html{
   .btn-small{
     @apply flex items-center gap-1 text-xs font-medium bg-primary text-white hover:bg-sky-200/60 hover:text-primary rounded px-3 py-[4px]
   }
+  .icon-btn{
+    @apply text-[20px] text-slate-300 cursor-pointer hover:text-blue-500
+  }
  }
 }
