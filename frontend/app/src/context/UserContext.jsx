@@ -8,8 +8,20 @@ const UserProvider = ({ children }) => {
     const clearUser = () => {
         setUser(null)
     }
+    const updateUserStats = (key, value) => {
+        setUser((pre) => ({
+            ...pre,
+            [key]: value
+        }))
+    }
+    const onPollCreateOrDelete = (type = "create") => {
+        const totalPollsCreated = user.totalPollsCreated || 0;
+        updateUserStats("totalPollsCreated",
+            type === "create" ? totalPollsCreated + 1 : totalPollsCreated - 1
+        )
+    }
     return (
-        <UserContext.Provider value={{ user, updateUser, clearUser }}>
+        <UserContext.Provider value={{ user, updateUser, clearUser,onPollCreateOrDelete }}>
             {children}
         </UserContext.Provider>
     )

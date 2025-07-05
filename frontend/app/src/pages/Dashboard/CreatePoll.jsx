@@ -12,7 +12,7 @@ import toast from 'react-hot-toast'
 
 const CreatePoll = () => {
   useUserAuth()
-  const { user } = useContext(UserContext)
+  const { user,onPollCreateOrDelete} = useContext(UserContext)
   const [pollData, setPollData] = useState({
     question: "",
     type: '',
@@ -59,7 +59,7 @@ const CreatePoll = () => {
   }
 
   const handleCreatePoll = async () => {
-    const { question, type, options, error } = pollData
+    const { question, type,imageOptions, options, error } = pollData
     if (!question || !type) {
       console.log("CREATE", { question, type, options, error })
       handleValueChange('error', 'Please fill all the fields')
@@ -74,8 +74,7 @@ const CreatePoll = () => {
       return
     }
 
-    handleValueChange("error", '')
-    console.log("NO_ERROR", { pollData });
+
     const optionData = await getOptions()
     try {
       const response = await axiosInstance.post(API_PATHS.POLLS.CREATE, {
@@ -86,14 +85,15 @@ const CreatePoll = () => {
       })
       if (response) {
         toast.success('Poll Created Successfully')
+        onPollCreateOrDelete()
         clearData()
       }
     } catch (error) {
       if (error.response && error.response.data.message) {
-        toast.error(error.response.data)
-        handleValueChange("value", error.response.data.message)
+        toast.error(error.response.data.message)
+        handleValueChange("error", error.response.data.message)
       } else {
-        handleValueChange("value", "Something went wrong ,try again")
+        handleValueChange("error", "Something went wrong ,try again")
       }
     }
 
