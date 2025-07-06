@@ -12,7 +12,7 @@ import toast from 'react-hot-toast'
 
 const CreatePoll = () => {
   useUserAuth()
-  const { user,onPollCreateOrDelete} = useContext(UserContext)
+  const { user, onPollCreateOrDelete } = useContext(UserContext)
   const [pollData, setPollData] = useState({
     question: "",
     type: '',
@@ -59,7 +59,7 @@ const CreatePoll = () => {
   }
 
   const handleCreatePoll = async () => {
-    const { question, type,imageOptions, options, error } = pollData
+    const { question, type, imageOptions, options, error } = pollData
     if (!question || !type) {
       console.log("CREATE", { question, type, options, error })
       handleValueChange('error', 'Please fill all the fields')
@@ -74,6 +74,7 @@ const CreatePoll = () => {
       return
     }
 
+    console.log(pollData);
 
     const optionData = await getOptions()
     try {
