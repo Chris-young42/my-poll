@@ -33,14 +33,14 @@ exports.createPoll = async (req, res) => {
                 if (!options || options.length < 2) {
                     return res.status(400).json({ message: "Image-based poll requires exactly two option" });
                 }
-                processedOptions = options.map(url => ({ optionText: url }));
+                processedOptions = options.map((url) => ({ optionText: url }));
                 break;
 
             default:
                 return res.status(400).json({ message: "Invalid poll type" });
         }
         const newPoll = await Poll.create({ question, type, options: processedOptions, creator: creatorId });
-        res.status(201).json({ poll: newPoll });
+        res.status(201).json(newPoll);
     } catch (error) {
         res.status(500).json({ message: "Error creating poll", error: error.message });
 

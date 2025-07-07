@@ -21,7 +21,7 @@ const UserProvider = ({ children }) => {
         )
     }
     return (
-        <UserContext.Provider value={{ user, updateUser, clearUser,onPollCreateOrDelete }}>
+        <UserContext.Provider value={{ user, updateUser, clearUser, onPollCreateOrDelete }}>
             {children}
         </UserContext.Provider>
     )

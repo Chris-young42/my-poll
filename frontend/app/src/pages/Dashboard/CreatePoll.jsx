@@ -33,12 +33,12 @@ const CreatePoll = () => {
     })
   }
   const updateImageAndGetLink = async (imageOptions) => {
-    const optionPromises = imageOptions.map(async () => {
+    const optionPromises = imageOptions.map(async (imageOption) => {
       try {
-        const imgUploadRes = await uploadImage(imageOptions.file)
-        return imgUploadRes.imgUrl || ""
+        const imgUploadRes = await uploadImage(imageOption.file)
+        return imgUploadRes.imageUrl || ""
       } catch (error) {
-        toast.error(`Error upload:${imageOptions.file.name}`)
+        toast.error(`Error upload:${imageOption.file.name}`)
         return ""
       }
     })
@@ -60,6 +60,8 @@ const CreatePoll = () => {
 
   const handleCreatePoll = async () => {
     const { question, type, imageOptions, options, error } = pollData
+
+
     if (!question || !type) {
       console.log("CREATE", { question, type, options, error })
       handleValueChange('error', 'Please fill all the fields')
@@ -73,8 +75,6 @@ const CreatePoll = () => {
       handleValueChange('error', 'Please add at least 2 options')
       return
     }
-
-    console.log(pollData);
 
     const optionData = await getOptions()
     try {
