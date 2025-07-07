@@ -1,9 +1,12 @@
-import React, { useContext, useState } from 'react'
+import React, { useCallback, useContext, useState } from 'react'
 import { UserContext } from '../../context/UserContext'
 import { getPollBookmarked } from '../../utils/helper'
 import UserProfileInfo from '../cards/UserProfileInfo'
 import PollActions from './PollActions'
 import PollContent from './PollContent'
+import axiosInstance from '../../utils/axiosInstance'
+import { API_PATHS } from '../../utils/apiPaths'
+import toast from 'react-hot-toast'
 
 
 
@@ -23,7 +26,7 @@ const PollCard = ({
     isMyPoll
 }) => {
 
-    const { user } = useContext(UserContext)
+    const { user, onUserVoted,toggleBookmarkId } = useContext(UserContext)
     const [selectedOptionIndex, setSelectedOptionIndex] = useState(-1)
     const [rating, setRating] = useState(0)
     const [userResponse, setUserresponse] = useState("")
@@ -40,13 +43,68 @@ const PollCard = ({
     const [pollBookmarked, setPollBookmarked] = useState(isPollBookmarked)
     const [pollClosed, setPollClosed] = useState(isPollClosed || false)
     const [pollDeleted, setPOllDeleted] = useState(false)
-    const handleInput=(value)=>{
-        if(type==="rating"){
+    const handleInput = (value) => {
+        if (type === "rating") {
             setRating(value)
-        }else if(type==="open-ended"){
+        } else if (type === "open-ended") {
             setUserresponse(value)
-        }else{
+        } else {
             setSelectedOptionIndex(value)
+        }
+    }
+    const getPostData = useCallback(() => {
+        if (type === "open-ended") {
+            return { responseText: userResponse, voterId: user._id }
+        }
+        if (type === "rating") {
+            return { responseText: rating - 1, voterId: user, _id }
+        }
+        return { optionIndex: selectedOptionIndex, voterId: user._id, }
+    }, [type, userResponse, rating, selectedOptionIndex, user])
+    const getPollDetial = async () => {
+        try {
+            const response = await axiosInstance.get(API_PATHS.POLLS.GET_BY_ID(pollId))
+            if (response.data) {
+                const pollDetails = response.data
+                setPollResult({
+                    options: pollDetails.option || [],
+                    voters: pollDetails.voters.length || 0,
+                    response: pollDetails.responses || [],
+                })
+            }
+        } catch (error) {
+            console.error(error.response?.data?.message || "error submiting");
+
+        }
+    }
+
+    const handleVoteSubmit = async () => {
+        try {
+            const response = await axiosInstance.post(
+                API_PATHS.POLLS.VOTE(pollId), getPostData()
+            )
+            getPollDetial()
+            setIsVotedConplete(true)
+            onUserVoted()
+            toast.success("voted success")
+
+        } catch (error) {
+            console.error(error.response?.data?.message);
+
+        }
+    }
+
+    const toggleBookmark = async () => {
+        try {
+            const response = await axiosInstance.post(
+                API_PATHS.POLLS.BOOKMARK(pollId)
+            )
+            toggleBookmarkId(pollId)
+            setPollBookmarked(prev => !prev)
+            toast.success(response.data.message)
+        } catch (error) {
+console.error(error.response?.data?.message||"Error bookmarking poll");
+
         }
     }
     return (
@@ -61,29 +119,31 @@ const PollCard = ({
                 <PollActions
                     pollId={pollId}
                     isVotedComplete={isVotedComplete}
-                    inputCaptured={!!userResponse || selectedOptionIndex >= 0||rating}
-                    onVoteSubmit={() => { }}
+                    inputCaptured={!!userResponse || selectedOptionIndex >= 0 || rating}
+                    onVoteSubmit={handleVoteSubmit}
                     isBookmarked={pollBookmarked}
                     pollClosed={pollClosed}
                     onClosePoll={() => { }}
                     onDelete={() => { }}
                     isMyPoll={isMyPoll}
-                    toggleBookmark={()=>{}}
+                    toggleBookmark={toggleBookmark}
                 />
             </div>
             <div className='ml-14 mt-3'>
                 <p className='text-[15px] text-black leading-8'>{question}</p>
                 <div className='mt-4'>
-                    <PollContent
-                        type={type}
-                        options={options}
-                        selectedOptionIndex={selectedOptionIndex}
-                        onOptionSelect={handleInput}
-                        rating={rating}
-                        onRatingChange={handleInput}
-                        userResponse={userResponse}
-                        onResponseChange={handleInput}
-                    />
+                    {isVotedComplete || isPollClosed ? <>Show result</> : (
+                        <PollContent
+                            type={type}
+                            options={options}
+                            selectedOptionIndex={selectedOptionIndex}
+                            onOptionSelect={handleInput}
+                            rating={rating}
+                            onRatingChange={handleInput}
+                            userResponse={userResponse}
+                            onResponseChange={handleInput}
+                        />
+                    )}
                 </div>
             </div>
         </div>

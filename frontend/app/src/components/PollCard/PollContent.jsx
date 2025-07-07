@@ -28,14 +28,14 @@ const PollContent = ({
                     ))}
                 </>
             )
-        case "inmage-based":
+        case "image-based":
             return (
                 <div className='grid grid-cols-2 gap-4'>
                     {options.map((option, index) => (
                         <ImageOptionInputTile
                             key={option._id}
                             isSelected={selectedOptionIndex === index}
-                            imageUrl={option.optionText || ""}
+                            imgUrl={option.optionText || ""}
                             onSelect={() => onOptionSelect(index)}
                         />
                     ))}

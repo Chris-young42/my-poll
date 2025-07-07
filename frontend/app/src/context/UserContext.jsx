@@ -9,10 +9,15 @@ const UserProvider = ({ children }) => {
         setUser(null)
     }
     const updateUserStats = (key, value) => {
-        setUser((pre) => ({
-            ...pre,
+        setUser((prev) => ({
+            ...prev,
             [key]: value
         }))
+    }
+
+    const onUserVoted = () => {
+        const totalPollsVotes = user.totalPollsVotes || 0
+        updateUserStats("totalPollVotex", totalPollsVotes + 1)
     }
     const onPollCreateOrDelete = (type = "create") => {
         const totalPollsCreated = user.totalPollsCreated || 0;
@@ -20,8 +25,26 @@ const UserProvider = ({ children }) => {
             type === "create" ? totalPollsCreated + 1 : totalPollsCreated - 1
         )
     }
+    const toggleBookmarkId = (id) => {
+        const bookmarks = user.bookmarkedPolls || []
+        const index = bookmarks.indexOf(id)
+        if (index === -1) {
+            setUser((prev) => ({
+                ...prev,
+                bookmarkedPolls: [...bookmarks, id],
+                totalPollsBookmarked: prev.totalPollsBookmarked + 1
+            }))
+        } else {
+            setUser((prev) => ({
+                ...prev,
+                bookmarkedPolls: bookmarks.filter((item) => item !== id),
+                totalPollsBookmarked: prev.totalPollsBookmarked - 1
+            }))
+        }
+
+    }
     return (
-        <UserContext.Provider value={{ user, updateUser, clearUser, onPollCreateOrDelete }}>
+        <UserContext.Provider value={{ user, updateUser, clearUser, onPollCreateOrDelete, onUserVoted,toggleBookmarkId }}>
             {children}
         </UserContext.Provider>
     )
