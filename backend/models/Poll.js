@@ -15,7 +15,7 @@ const PollSchema = new mongoose.Schema({
             createAt: { type: Date, default: Date.now }
         },
     ],
-    creator: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true  },
+    creator: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     voters: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     createdAt: { type: Date, default: Date.now },
     closed: { type: Boolean, default: false },

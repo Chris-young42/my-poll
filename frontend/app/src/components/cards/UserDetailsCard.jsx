@@ -11,7 +11,7 @@ const StatsInfo = ({ lable, value }) => {
 }
 const UserDetailsCard = (
     { profileImageUrl,
-        fullname,
+        fullName,
         username,
         totalPollsVotes,
         totalPollsCreated,
@@ -24,14 +24,14 @@ const UserDetailsCard = (
                     {profileImageUrl ? <img src={profileImageUrl || ""}
                         alt='profile image'
                         className='w-20 h-20 bg-slate-400 rounded-full'
-                    /> : <CharAvatar fullname={fullname} width="w-20" height="h-20" style="text-xl" />
+                    /> : <CharAvatar fullname={fullName} width="w-20" height="h-20" style="text-xl" />
                     }
                 </div>
             </div>
             <div className='mt-12 px-5'>
                 <div className='text-center pt-1'>
                     <h5 className='text-lg text-gray-950 font-medium leading-6'>
-                        {fullname}
+                        {fullName}
                     </h5>
                     <span className='text-[13px] font-medium text-slate-700/60'>
                         @{username}

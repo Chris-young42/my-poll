@@ -16,7 +16,7 @@ const PollCard = ({
     type,
     options,
     voters,
-    response,
+    responses,
     creatorProfileImg,
     creatorName,
     creatorUsername,
@@ -26,15 +26,15 @@ const PollCard = ({
     isMyPoll
 }) => {
 
-    const { user, onUserVoted,toggleBookmarkId } = useContext(UserContext)
+    const { user, onUserVoted, toggleBookmarkId } = useContext(UserContext)
     const [selectedOptionIndex, setSelectedOptionIndex] = useState(-1)
     const [rating, setRating] = useState(0)
     const [userResponse, setUserresponse] = useState("")
-    const [isVotedComplete, setIsVotedConplete] = useState(userHasVoted)
+    const [isVotedComplete, setIsVotedComplete] = useState(userHasVoted)
     const [pollResult, setPollResult] = useState({
         options,
         voters,
-        response
+        responses
     })
     const isPollBookmarked = getPollBookmarked(
         pollId,
@@ -42,7 +42,7 @@ const PollCard = ({
     )
     const [pollBookmarked, setPollBookmarked] = useState(isPollBookmarked)
     const [pollClosed, setPollClosed] = useState(isPollClosed || false)
-    const [pollDeleted, setPOllDeleted] = useState(false)
+    const [pollDeleted, setPollDeleted] = useState(false)
     const handleInput = (value) => {
         if (type === "rating") {
             setRating(value)
@@ -69,7 +69,7 @@ const PollCard = ({
                 setPollResult({
                     options: pollDetails.option || [],
                     voters: pollDetails.voters.length || 0,
-                    response: pollDetails.responses || [],
+                    responses: pollDetails.responses || [],
                 })
             }
         } catch (error) {
@@ -84,7 +84,7 @@ const PollCard = ({
                 API_PATHS.POLLS.VOTE(pollId), getPostData()
             )
             getPollDetial()
-            setIsVotedConplete(true)
+            setIsVotedComplete(true)
             onUserVoted()
             toast.success("voted success")
 
@@ -103,7 +103,7 @@ const PollCard = ({
             setPollBookmarked(prev => !prev)
             toast.success(response.data.message)
         } catch (error) {
-console.error(error.response?.data?.message||"Error bookmarking poll");
+            console.error(error.response?.data?.message || "Error bookmarking poll");
 
         }
     }
@@ -132,18 +132,21 @@ console.error(error.response?.data?.message||"Error bookmarking poll");
             <div className='ml-14 mt-3'>
                 <p className='text-[15px] text-black leading-8'>{question}</p>
                 <div className='mt-4'>
-                    {isVotedComplete || isPollClosed ? <>Show result</> : (
-                        <PollContent
-                            type={type}
-                            options={options}
-                            selectedOptionIndex={selectedOptionIndex}
-                            onOptionSelect={handleInput}
-                            rating={rating}
-                            onRatingChange={handleInput}
-                            userResponse={userResponse}
-                            onResponseChange={handleInput}
-                        />
-                    )}
+                    {isVotedComplete || isPollClosed ?
+
+                        <>srfhu8</>
+                        : (
+                            <PollContent
+                                type={type}
+                                options={options}
+                                selectedOptionIndex={selectedOptionIndex}
+                                onOptionSelect={handleInput}
+                                rating={rating}
+                                onRatingChange={handleInput}
+                                userResponse={userResponse}
+                                onResponseChange={handleInput}
+                            />
+                        )}
                 </div>
             </div>
         </div>

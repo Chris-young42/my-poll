@@ -43,7 +43,7 @@ const Home = () => {
 
   useEffect(() => {
     setPage(1)
-    fetchAllPolls()
+    fetchAllPolls(1)
     return () => { }
   }, [filterType])
 
@@ -69,7 +69,7 @@ const Home = () => {
           type={poll.type}
           options={poll.options}
           voters={poll.voters.length || 0}
-          response={poll.response || []}
+          responses={poll.response || []}
           creatorProfileImg={poll.creator.profileImageUrl || null}
           creatorName={poll.creator.fullname}
           creatorUsername={poll.creator.username}

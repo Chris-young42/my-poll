@@ -7,7 +7,7 @@ const ImageOptionInputTile = ({
 }) => {
     const getColors = () => {
         if (isSelected) {
-            return "border--primary border-2"
+            return "border-primary border-2"
         }
         return "border-transparent"
     }

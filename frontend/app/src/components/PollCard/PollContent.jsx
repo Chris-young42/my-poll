@@ -43,7 +43,7 @@ const PollContent = ({
             )
         case "rating":
             return <Rating value={rating} onChange={onRatingChange} />
-        case "open-end":
+        case "open-ended":
             return (
                 <div className='mt-3'>
                     <textarea
@@ -55,8 +55,6 @@ const PollContent = ({
                     />
                 </div>
             )
-
-
         default:
             return null
     }

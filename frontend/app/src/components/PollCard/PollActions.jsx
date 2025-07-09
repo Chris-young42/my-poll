@@ -13,9 +13,7 @@ const PollActions = ({
     isBookmarked
 }) => {
     const [loading, setLoading] = useState(false)
-    // const toggleBookmark = () => {
-    //     setIsBookmarked(!isBookmarked)
-    // }
+
     const handleVoteClick = async () => {
         setLoading(true)
         try {
@@ -29,7 +27,6 @@ const PollActions = ({
             {(isVotedComplete || pollClosed) && (
                 <div className='text-[11px] font-medium text-slate-600 bg-sky-700/10 px-3 py-1 rounded-md'>
                     {pollClosed ? "Closed" : "Voted"}
-
                 </div>
             )}
             <button className='icon-btn' onClick={toggleBookmark}>
