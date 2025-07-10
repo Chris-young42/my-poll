@@ -17,7 +17,7 @@ const UserProvider = ({ children }) => {
 
     const onUserVoted = () => {
         const totalPollsVotes = user.totalPollsVotes || 0
-        updateUserStats("totalPollVotex", totalPollsVotes + 1)
+        updateUserStats("totalPollVotes", totalPollsVotes + 1)
     }
     const onPollCreateOrDelete = (type = "create") => {
         const totalPollsCreated = user.totalPollsCreated || 0;

@@ -27,5 +27,9 @@ html{
   .icon-btn{
     @apply text-[20px] text-slate-300 cursor-pointer hover:text-blue-500
   }
+
+  .info-text{
+    @apply text-sm text-primary font-medium text-center bg-gray-100 rounded-lg
+  }
  }
 }

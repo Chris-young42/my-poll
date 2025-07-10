@@ -157,6 +157,10 @@ exports.getPollById = async (req, res) => {
     const { id } = req.params
     try {
         const poll = await Poll.findById(id).populate("creator", "username email")
+            .populate({
+                path: "response.voterId",
+                select: "username profileImageUrl fullName"
+            })
         if (!poll) {
             return res.status(404).json({ message: "Poll not found" })
         }
@@ -208,7 +212,7 @@ exports.closePoll = async (req, res) => {
         if (!poll) {
             return res.status(404).json({ message: "Poll not found" });
         }
-        if (!poll.creator.toString() !== userId) {
+        if (poll.creator.toString() !== userId) {
             return res.status(403).json({ message: "Forbidden: Only the poll creator can close the poll" });
         }
         poll.closed = true
@@ -296,8 +300,7 @@ exports.deletePoll = async (req, res) => {
         if (poll.creator.toString() !== userId) {
             return res.status(403).json({ message: "Forbidden: Only the poll creator can delete the poll" });
         }
-        await poll.findByIdAndDelete(id)
-
+        await Poll.findByIdAndDelete(id)
         res.status(200).json({ message: "Poll deleted successfully" })
     } catch (error) {
         res.status(500).json({ message: "Error getting polls", error: error.message });

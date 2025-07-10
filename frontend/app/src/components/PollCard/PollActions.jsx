@@ -29,23 +29,40 @@ const PollActions = ({
                     {pollClosed ? "Closed" : "Voted"}
                 </div>
             )}
-            <button className='icon-btn' onClick={toggleBookmark}>
-                {isBookmarked ? (<FaBookmark className="text-primary" />) : (
-                    <FaRegBookmark />
-                )}
-            </button>
-            {inputCaptured && !isVotedComplete && (
-                <button
-                    className='btn-small ml-auto'
-                    onClick={handleVoteClick}
-                    disabled={loading}
-                >
-                    {loading ? "Submitting..." : "Submit"}
-                </button>
-            )
+            {isMyPoll && !pollClosed && (
+                <button className='btn-small text-orange-500 bg-orange-500/20 hover:bg-orange-500 hover:text-white hover:border-organge-100'
 
-            }
-        </div>
+                    onClick={onClosePoll}
+                    disabled={loading}
+                >close</button>
+            )}
+            {isMyPoll && (
+                <button
+                    className='btn-small text-red-500 bg-red-500/20 hover:bg-red-500 hover:text-slate-100'
+                    onClick={onDelete}
+                >
+                    Delete
+                </button>
+            )}
+                < button className='icon-btn' onClick={toggleBookmark}>
+            {isBookmarked ? (<FaBookmark className="text-primary" />) : (
+                <FaRegBookmark />
+            )}
+        </button>
+            {
+        inputCaptured && !isVotedComplete && (
+            <button
+                className='btn-small ml-auto'
+                onClick={handleVoteClick}
+                disabled={loading}
+            >
+                {loading ? "Submitting..." : "Submit"}
+            </button>
+
+        )
+
+    }
+        </div >
     )
 }
 

@@ -24,7 +24,7 @@ const UserDetailsCard = (
                     {profileImageUrl ? <img src={profileImageUrl || ""}
                         alt='profile image'
                         className='w-20 h-20 bg-slate-400 rounded-full'
-                    /> : <CharAvatar fullname={fullName} width="w-20" height="h-20" style="text-xl" />
+                    /> : <CharAvatar fullName={fullName} width="w-20" height="h-20" style="text-xl" />
                     }
                 </div>
             </div>

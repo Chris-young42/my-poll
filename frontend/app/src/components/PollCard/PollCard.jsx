@@ -7,6 +7,7 @@ import PollContent from './PollContent'
 import axiosInstance from '../../utils/axiosInstance'
 import { API_PATHS } from '../../utils/apiPaths'
 import toast from 'react-hot-toast'
+import PollingResultContent from './PollingResultContent'
 
 
 
@@ -26,7 +27,7 @@ const PollCard = ({
     isMyPoll
 }) => {
 
-    const { user, onUserVoted, toggleBookmarkId } = useContext(UserContext)
+    const { user, onUserVoted, toggleBookmarkId, onPollCreateOrDelete } = useContext(UserContext)
     const [selectedOptionIndex, setSelectedOptionIndex] = useState(-1)
     const [rating, setRating] = useState(0)
     const [userResponse, setUserresponse] = useState("")
@@ -61,6 +62,7 @@ const PollCard = ({
         }
         return { optionIndex: selectedOptionIndex, voterId: user._id, }
     }, [type, userResponse, rating, selectedOptionIndex, user])
+
     const getPollDetial = async () => {
         try {
             const response = await axiosInstance.get(API_PATHS.POLLS.GET_BY_ID(pollId))
@@ -93,7 +95,19 @@ const PollCard = ({
 
         }
     }
+    const closePoll = async () => {
+        try {
+            const response = await axiosInstance.post(API_PATHS.POLLS.CLOSE(pollId))
+            if (response.data) {
+                setPollClosed(true)
+                toast.success("closed Successfully")
+            }
+        } catch (error) {
+            toast.error("wrong")
+            console.log("wrong",error);
 
+        }
+    }
     const toggleBookmark = async () => {
         try {
             const response = await axiosInstance.post(
@@ -104,6 +118,20 @@ const PollCard = ({
             toast.success(response.data.message)
         } catch (error) {
             console.error(error.response?.data?.message || "Error bookmarking poll");
+
+        }
+    }
+    const deletePoll=async()=>{
+        try {
+            const response = await axiosInstance.delete(API_PATHS.POLLS.DELETE(pollId))
+            if (response.data) {
+                setPollDeleted(true)
+                onPollCreateOrDelete()
+                toast.success("deleted Successfully")
+            }
+        } catch (error) {
+            toast.error("wrong")
+            console.log("wrong", error);
 
         }
     }
@@ -123,8 +151,8 @@ const PollCard = ({
                     onVoteSubmit={handleVoteSubmit}
                     isBookmarked={pollBookmarked}
                     pollClosed={pollClosed}
-                    onClosePoll={() => { }}
-                    onDelete={() => { }}
+                    onClosePoll={closePoll}
+                    onDelete={deletePoll}
                     isMyPoll={isMyPoll}
                     toggleBookmark={toggleBookmark}
                 />
@@ -133,8 +161,12 @@ const PollCard = ({
                 <p className='text-[15px] text-black leading-8'>{question}</p>
                 <div className='mt-4'>
                     {isVotedComplete || isPollClosed ?
-
-                        <>srfhu8</>
+                        (<PollingResultContent
+                            type={type}
+                            options={options}
+                            voters={pollResult.voters}
+                            responses={pollResult.responses || []}
+                        />)
                         : (
                             <PollContent
                                 type={type}
