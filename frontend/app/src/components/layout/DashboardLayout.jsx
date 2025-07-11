@@ -4,12 +4,13 @@ import SiderMenu from './SiderMenu'
 import UserDetailsCard from '../cards/UserDetailsCard'
 import { useContext } from 'react'
 import { UserContext } from '../../context/UserContext'
+import TreadingPolls from './TreadingPolls'
 
-const DashboardLayout = ({ children, activeMenu }) => {
+const DashboardLayout = ({ children, activeMenu, stats, showStats }) => {
     const { user } = useContext(UserContext)
     return (
         <div>
-            <Navbar activeMenu={activeMenu}/>
+            <Navbar activeMenu={activeMenu} />
             {user && (<div className='flex'>
                 <div className='max-[1080px]:hidden'>
                     <SiderMenu activeMenu={activeMenu} />
@@ -26,9 +27,10 @@ const DashboardLayout = ({ children, activeMenu }) => {
                         totalPollsCreated={user && user.totalPollsCreated}
                         totalPollsBookmarked={user && user.totalPollsBookmarked}
                     />
+                    {showStats && stats?.length > 0 && <TreadingPolls stats={stats} />}
                 </div>
             </div>
-        )}
+            )}
         </div>
     )
 }

@@ -261,8 +261,14 @@ exports.getBookmarkedPolls = async (req, res) => {
             path: "bookmarkedPolls",
             populate: {
                 path: "creator",
-                select: "username username profileImageUrl"
+                select: "fullName username profileImageUrl"
             }
+        }).populate({
+            path: "bookmarkedPolls",
+            populate: {
+                path: "responses.voterId",
+                select: "fullName username profileImageUrl"
+            },
         })
 
         if (!user) {

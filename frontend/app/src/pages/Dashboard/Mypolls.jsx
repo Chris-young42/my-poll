@@ -53,7 +53,7 @@ const MyPolls = () => {
     setPage(1)
     fetchAllPolls(1)
     return () => { }
-  }, [filterType])
+  }, [filterType,user])
 
 
   useEffect(() => {
