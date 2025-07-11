@@ -58,7 +58,7 @@ const PollCard = ({
             return { responseText: userResponse, voterId: user._id }
         }
         if (type === "rating") {
-            return { responseText: rating - 1, voterId: user, _id }
+            return { optionIndex: rating - 1, voterId: user._id }
         }
         return { optionIndex: selectedOptionIndex, voterId: user._id, }
     }, [type, userResponse, rating, selectedOptionIndex, user])
@@ -104,7 +104,7 @@ const PollCard = ({
             }
         } catch (error) {
             toast.error("wrong")
-            console.log("wrong",error);
+            console.log("wrong", error);
 
         }
     }
@@ -121,7 +121,7 @@ const PollCard = ({
 
         }
     }
-    const deletePoll=async()=>{
+    const deletePoll = async () => {
         try {
             const response = await axiosInstance.delete(API_PATHS.POLLS.DELETE(pollId))
             if (response.data) {
