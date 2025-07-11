@@ -157,14 +157,11 @@ exports.getPollById = async (req, res) => {
     const { id } = req.params
     try {
         const poll = await Poll.findById(id).populate("creator", "username email")
-            .populate({
-                path: "response.voterId",
-                select: "username profileImageUrl fullName"
-            })
+          
         if (!poll) {
             return res.status(404).json({ message: "Poll not found" })
         }
-        res.status(200).json({ poll })
+        res.status(200).json(poll)
 
     } catch (error) {
         res.status(500).json({ message: "Error getting polls", error: error.message });
